@@ -44,7 +44,7 @@ RUTAS BACKEND API:
 
 ## POSTMAN COLLECTION
 
-Nota: Adjunto al resositorio agrego el archivo para consumir los servicios desde postman
+Nota: Adjunto en el resositorio agrego el archivo para consumir los servicios desde postman
 
 
 
