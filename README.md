@@ -28,7 +28,7 @@ Nodejs: 14.17+
 RUTAS BACKEND API: 
 
 1. /api/get-games-top -> Retornar games mas vistos del momento
-2  /api/game/:id      -> Retornar juego por ID [mongo, msql]
+2.  /api/game/:id      -> Retornar juego por ID [mongo, msql]
 3. /api/games         -> Listar juegos en BD local [mongo, msql]
 4. /api/create        -> Crear juego [mongo, msql]
 5. /api/update/:id    -> Actualizar juego [mongo, msql]
