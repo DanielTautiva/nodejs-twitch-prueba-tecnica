@@ -6,7 +6,8 @@
 Gestor BD: MySQL(8+)
 
 Nota: Es requerido que exista la conexión local para el funcionamiento del proyecto.
-
+ 
+- Base de datos: app_node  
 - Usuario: root 
 - Contraseña: ""
 - Puerto : 3306
