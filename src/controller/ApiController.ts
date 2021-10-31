@@ -8,12 +8,28 @@ import * as https from 'https';
 // TypeOrm
 import {getRepository} from "typeorm";
 import { validate } from "class-validator";
-// Models
-import GamesMongo from '../models/Game';
-import { GameMysql } from '../entity/GameMysql';
+
+
 import { mongo } from "mongoose";
 
 export class ApiController {
+
+    
+    /**
+     * 
+     * @param req 
+     * @param res 
+     */    
+    public static local (req: Request, res: Response) { 
+        
+        const { username, password } = req.body
+        
+        res.send({
+            message:'successful',
+            user: username
+        })
+
+    }
 
     /**
      * 
@@ -69,134 +85,134 @@ export class ApiController {
      * @param req 
      * @param res 
      */
-    public static getGamesTop = async(req: Request, res: Response) => {
+    // public static getGamesTop = async(req: Request, res: Response) => {
 
-        const options: TwitchApiConfig = {
-            client_id: config.CLIENT_ID,
-            client_secret: config.CLIENT_SECRET
-        }
+    //     const options: TwitchApiConfig = {
+    //         client_id: config.CLIENT_ID,
+    //         client_secret: config.CLIENT_SECRET
+    //     }
 
-        const twitch = new TwitchApi(options); 
+    //     const twitch = new TwitchApi(options); 
 
-        try {
+    //     try {
             
-            const getTopGames = await twitch.getTopGames();
+    //         const getTopGames = await twitch.getTopGames();
 
-            //
-            for (const item of getTopGames.data) {
+    //         //
+    //         for (const item of getTopGames.data) {
 
-                const _id  = item.id;
-                const name = item.name;
-                const url = item.box_art_url;
+    //             const _id  = item.id;
+    //             const name = item.name;
+    //             const url = item.box_art_url;
 
-                ///////////////////////  MONGO ///////////////////////
-                const mongoOne = await GamesMongo.findById({_id: _id});
+    //             ///////////////////////  MONGO ///////////////////////
+    //             const mongoOne = await GamesMongo.findById({_id: _id});
 
-                if(mongoOne){
+    //             if(mongoOne){
 
-                    await GamesMongo.findByIdAndUpdate({_id: _id}, {
-                        _id,
-                        name, 
-                        url
-                    });
+    //                 await GamesMongo.findByIdAndUpdate({_id: _id}, {
+    //                     _id,
+    //                     name, 
+    //                     url
+    //                 });
 
-                }else{
+    //             }else{
 
-                    const mongoSave = new GamesMongo({ _id, name, url });
-                    await mongoSave.save();
-                }
+    //                 const mongoSave = new GamesMongo({ _id, name, url });
+    //                 await mongoSave.save();
+    //             }
 
-                /////////////////////// MYSQL ///////////////////////
-                let mysqlSave:GameMysql;
-                const mysqlRepository = getRepository(GameMysql);
+    //             /////////////////////// MYSQL ///////////////////////
+    //             let mysqlSave:GameMysql;
+    //             const mysqlRepository = getRepository(GameMysql);
 
-                mysqlSave = await mysqlRepository.findOne({
-                    where:
-                    {name: name}
-                });
+    //             mysqlSave = await mysqlRepository.findOne({
+    //                 where:
+    //                 {name: name}
+    //             });
 
-                if(!mysqlSave){
-                    mysqlSave = new GameMysql();
-                }
+    //             if(!mysqlSave){
+    //                 mysqlSave = new GameMysql();
+    //             }
 
-                mysqlSave.id = item.id;
-                mysqlSave.name = name;
-                mysqlSave.url = url;
+    //             mysqlSave.id = item.id;
+    //             mysqlSave.name = name;
+    //             mysqlSave.url = url;
 
-                await mysqlRepository.save(mysqlSave);
+    //             await mysqlRepository.save(mysqlSave);
 
-            };
+    //         };
 
-            res.send(getTopGames);
+    //         res.send(getTopGames);
 
-        } catch (error) {
-            return res.status(500).json({
-                message: ( error?.errors?.length ? error?.errors[0]?.message : null) || error?.message,
-                data: error
-            });
+    //     } catch (error) {
+    //         return res.status(500).json({
+    //             message: ( error?.errors?.length ? error?.errors[0]?.message : null) || error?.message,
+    //             data: error
+    //         });
 
-        }   
-    }   
+    //     }   
+    // }   
 
     /***
      * 
      */
-    public static gelAll = async(req: Request, res: Response) => {
+    // public static gelAll = async(req: Request, res: Response) => {
 
-        ///////////////////////  MONGO ///////////////////////
-        const mongoAll = await GamesMongo.find();
+    //     ///////////////////////  MONGO ///////////////////////
+    //     const mongoAll = await GamesMongo.find();
    
-        /////////////////////// MYSQL ///////////////////////
-        const mysqlRepository = getRepository(GameMysql);
-        const mysqlAll = await mysqlRepository.find();
+    //     /////////////////////// MYSQL ///////////////////////
+    //     const mysqlRepository = getRepository(GameMysql);
+    //     const mysqlAll = await mysqlRepository.find();
 
-        if((mongoAll.length && mysqlAll.length) > 0){
-            res.send({
-                'mongo': mongoAll,
-                'mysql': mongoAll,
-            })
-        }
+    //     if((mongoAll.length && mysqlAll.length) > 0){
+    //         res.send({
+    //             'mongo': mongoAll,
+    //             'mysql': mongoAll,
+    //         })
+    //     }
 
-        res.status(400).json({message: 'Not result!'})
-    }
+    //     res.status(400).json({message: 'Not result!'})
+    // }
 
     /**
      * 
      * @param req 
      * @param res 
      */
-    public static getById = async(req: Request, res: Response) => {
+    // public static getById = async(req: Request, res: Response) => {
 
-        const { id }  = req.params;
+    //     const { id }  = req.params;
 
-        try {
+    //     try {
 
-            ///////////////////////  MONGO ///////////////////////
+    //         ///////////////////////  MONGO ///////////////////////
 
-            const mongoOne = await GamesMongo.findById({_id: id});
+    //         const mongoOne = await GamesMongo.findById({_id: id});
 
-            /////////////////////// MYSQL ///////////////////////
+    //         /////////////////////// MYSQL ///////////////////////
 
-            const mysqlRepository = getRepository(GameMysql);
+    //         const mysqlRepository = getRepository(GameMysql);
     
 
-            const mysqlOne = await mysqlRepository.findOne({
-                where:
-                {id: id}
-            });
+    //         const mysqlOne = await mysqlRepository.findOne({
+    //             where:
+    //             {id: id}
+    //         });
 
-            res.send({
-                'mongo': mongoOne ?? "Not Results",
-                'mysql': mysqlOne ?? "Not Results",
-            })
+    //         res.send({
+    //             'mongo': mongoOne ?? "Not Results",
+    //             'mysql': mysqlOne ?? "Not Results",
+    //         })
 
-        } catch (error) {
-            return res.status(400).json({
-                message: ( error?.errors?.length ? error?.errors[0]?.message : null) || error?.message
-            });
-        }
+    //     } catch (error) {
+    //         return res.status(400).json({
+    //             message: ( error?.errors?.length ? error?.errors[0]?.message : null) || error?.message
+    //         });
+    //     }
 
-    }
+    // }
 
 
     /**
@@ -204,104 +220,104 @@ export class ApiController {
      * @param req 
      * @param res 
      */
-    public static create = async(req: Request, res: Response) => {
+    // public static create = async(req: Request, res: Response) => {
 
-        const { _id, name, url } = req.body;
+    //     const { _id, name, url } = req.body;
 
-        try {
+    //     try {
             
-            ///////////////////////  MONGO ///////////////////////
+    //         ///////////////////////  MONGO ///////////////////////
 
-            const mongoSave = new GamesMongo({  _id, name, url });
-            await mongoSave.save();
+    //         const mongoSave = new GamesMongo({  _id, name, url });
+    //         await mongoSave.save();
  
-            /////////////////////// MYSQL ///////////////////////
+    //         /////////////////////// MYSQL ///////////////////////
 
-            const mysqlSave = new GameMysql();
+    //         const mysqlSave = new GameMysql();
 
-            mysqlSave.id = _id;
-            mysqlSave.name = name;
-            mysqlSave.url = url;
+    //         mysqlSave.id = _id;
+    //         mysqlSave.name = name;
+    //         mysqlSave.url = url;
         
-            const errors = await validate(mysqlSave, {
-                validationError:{target: false, value: false} 
-            });
+    //         const errors = await validate(mysqlSave, {
+    //             validationError:{target: false, value: false} 
+    //         });
 
 
-            if(errors.length > 0){
-                res.status(400).json(errors)
-            }
+    //         if(errors.length > 0){
+    //             res.status(400).json(errors)
+    //         }
 
-            const mysqlRepository = getRepository(GameMysql);
-            await mysqlRepository.save(mysqlSave);
+    //         const mysqlRepository = getRepository(GameMysql);
+    //         await mysqlRepository.save(mysqlSave);
 
-            res.send({
-                message:'Create successful',
-                mongo: mongoSave,
-                mysql: mysqlSave,
-            });
+    //         res.send({
+    //             message:'Create successful',
+    //             mongo: mongoSave,
+    //             mysql: mysqlSave,
+    //         });
 
-        } catch (error) {
-            return res.status(400).json({
-                message: ( error?.errors?.length ? error?.errors[0]?.message : null) || error?.message
-            });
-        }
-    }
+    //     } catch (error) {
+    //         return res.status(400).json({
+    //             message: ( error?.errors?.length ? error?.errors[0]?.message : null) || error?.message
+    //         });
+    //     }
+    // }
 
     /**
      * 
      * @param req 
      * @param res 
      */
-    public static update = async(req: Request, res: Response) => {
+    // public static update = async(req: Request, res: Response) => {
         
-        let mysqlSave:GameMysql;
+    //     let mysqlSave:GameMysql;
 
-        const _id = req.params.id;
-        const { name, url } = req.body;
+    //     const _id = req.params.id;
+    //     const { name, url } = req.body;
 
-        try {
+    //     try {
 
-            ///////////////////////  MONGO ///////////////////////
+    //         ///////////////////////  MONGO ///////////////////////
 
-            await GamesMongo.findByIdAndUpdate({_id: _id}, {
-                _id,
-                name, 
-                url
-            });
+    //         await GamesMongo.findByIdAndUpdate({_id: _id}, {
+    //             _id,
+    //             name, 
+    //             url
+    //         });
             
-            /////////////////////// MYSQL ///////////////////////
+    //         /////////////////////// MYSQL ///////////////////////
 
-            const mysqlRepository = getRepository(GameMysql);
+    //         const mysqlRepository = getRepository(GameMysql);
 
-            mysqlSave = await mysqlRepository.findOne({
-                where:
-                {id: _id}
-            });
+    //         mysqlSave = await mysqlRepository.findOne({
+    //             where:
+    //             {id: _id}
+    //         });
 
-            mysqlSave.name = name ?? mysqlSave.name;
-            mysqlSave.url = url ?? mysqlSave.url;
+    //         mysqlSave.name = name ?? mysqlSave.name;
+    //         mysqlSave.url = url ?? mysqlSave.url;
 
-            const errors = await validate(mysqlSave, {
-                validationError:{target: false, value: false} 
-            });
+    //         const errors = await validate(mysqlSave, {
+    //             validationError:{target: false, value: false} 
+    //         });
     
-            if(errors.length > 0){
-                res.status(400).json(errors)
-            }
+    //         if(errors.length > 0){
+    //             res.status(400).json(errors)
+    //         }
     
-            await mysqlRepository.save(mysqlSave);
+    //         await mysqlRepository.save(mysqlSave);
                 
-            res.status(201).send({
-                message:'Update successful'
-            });
+    //         res.status(201).send({
+    //             message:'Update successful'
+    //         });
 
-        } catch (error) {
-            return res.status(400).json({
-                message: ( error?.errors?.length ? error?.errors[0]?.message : null) || error?.message
-            });
-        } 
-    }
+    //     } catch (error) {
+    //         return res.status(400).json({
+    //             message: ( error?.errors?.length ? error?.errors[0]?.message : null) || error?.message
+    //         });
+    //     } 
+    // }
     
 
     /**
@@ -309,36 +325,37 @@ export class ApiController {
      * @param req 
      * @param res 
      */
-    public static delete = async(req: Request, res: Response) => {
+    // public static delete = async(req: Request, res: Response) => {
+
         
-        let mysqlDelete:GameMysql;
-        const _id = req.params.id;
+    //     let mysqlDelete:GameMysql;
+    //     const _id = req.params.id;
 
-        try {
+    //     try {
 
-            ///////////////////////  MONGO ///////////////////////
+    //         ///////////////////////  MONGO ///////////////////////
 
-            await GamesMongo.findByIdAndDelete({_id: _id});
+    //         await GamesMongo.findByIdAndDelete({_id: _id});
 
-            /////////////////////// MYSQL ///////////////////////
+    //         /////////////////////// MYSQL ///////////////////////
 
-            const mysqlRepository = getRepository(GameMysql);
+    //         const mysqlRepository = getRepository(GameMysql);
 
-            mysqlDelete = await mysqlRepository.findOne({
-                where:
-                {id: _id}
-            });
+    //         mysqlDelete = await mysqlRepository.findOne({
+    //             where:
+    //             {id: _id}
+    //         });
 
-            await mysqlRepository.remove(mysqlDelete);
+    //         await mysqlRepository.remove(mysqlDelete);
 
-            res.status(201).send({
-                message:'Delete successful'
-            });
+    //         res.status(201).send({
+    //             message:'Delete successful'
+    //         });
 
-        } catch (error) {
-            return res.status(400).json({
-                message: ( error?.errors?.length ? error?.errors[0]?.message : null) || error?.message
-            });
-        }
-    }
+    //     } catch (error) {
+    //         return res.status(400).json({
+    //             message: ( error?.errors?.length ? error?.errors[0]?.message : null) || error?.message
+    //         });
+    //     }
+    // }
 }
